@@ -55,9 +55,46 @@
                                             <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="p-2 bg-red-500 rounded-full text-white hover:bg-red-600" title="Hapus">
+                                                {{-- <button type="submit" class="p-2 bg-red-500 rounded-full text-white hover:bg-red-600" title="Hapus">
                                                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                                </button>
+                                                </button> --}}
+                                                <button type="button"
+                                                    class="p-2 bg-red-500 rounded-full text-white hover:bg-red-600"
+                                                    title="Hapus"
+                                                    onclick="openUserModal({{ $user->id }})">
+                                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- Modal Delete User -->
+                                            <div id="userModal-{{ $user->id }}"
+                                                class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                                                <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                                                    <h2 class="text-lg text-center font-semibold mb-2">Konfirmasi Hapus</h2>
+                                                    <p class="mb-4 text-center">Apakah Anda yakin ingin menghapus user ini?</p>
+                                                    <div class="flex justify-center gap-6">
+                                                        <!-- Tombol Batal -->
+                                                        <button type="button"
+                                                                onclick="closeUserModal({{ $user->id }})"
+                                                                class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">
+                                                            Batal
+                                                        </button>
+
+                                                        <!-- Tombol Hapus -->
+                                                        <form action="{{ route('users.destroy', $user->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             </form>
                                         </div>
                                     </td>
@@ -78,4 +115,12 @@
             </div>
         </div>
     </div>
+     <script>
+    function openUserModal(id) {
+        document.getElementById('userModal-' + id).classList.remove('hidden');
+    }
+    function closeUserModal(id) {
+        document.getElementById('userModal-' + id).classList.add('hidden');
+    }
+</script>
 </x-app-layout>
