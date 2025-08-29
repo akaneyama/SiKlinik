@@ -33,7 +33,7 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse ($products as $product)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap"> {{-- Tampilkan Gambar --}}
+                                    <td class="px-6 py-4 whitespace-nowrap"> 
                                         @if ($product->gambar_produk)
                                             <img src="{{ asset('storage/' . $product->gambar_produk) }}" alt="{{ $product->nama_produk }}" class="h-12 w-12 object-cover rounded-md">
                                         @else

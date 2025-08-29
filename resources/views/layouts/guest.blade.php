@@ -7,24 +7,27 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
+        <div class="flex min-h-screen bg-gray-100">
+            
+            <div class="hidden lg:flex w-1/2 items-center justify-center bg-gradient-to-br from-indigo-600 to-blue-500 p-12 text-white">
+                <div class="text-center">
+                    <h1 class="text-4xl font-bold tracking-tight">Sistem Informasi Klinik</h1>
+                    <p class="mt-4 text-lg opacity-80">Manajemen klinik terpadu untuk pelayanan yang lebih baik.</p>
+                </div>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+            <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
+                <div class="w-full max-w-md">
+                    {{ $slot }}
+                </div>
             </div>
+
         </div>
     </body>
 </html>

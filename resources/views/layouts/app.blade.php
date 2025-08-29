@@ -16,12 +16,12 @@
         
         <div class="flex h-screen bg-gray-200">
             <aside class="w-64 bg-gray-900 text-gray-200 flex flex-col">
-           <div class="h-25 flex flex-col items-center justify-center bg-gray-900 m-5">
+           <!-- <div class="h-25 flex flex-col items-center justify-center bg-gray-900 m-5">
                 <img src="{{ asset('klinik.jpg') }}"
                     alt="Klinik App Logo"
                     class="h-20 w-20 rounded-full object-cover  border-white mb-3">
 
-            </div>
+            </div> -->
                 <nav class="flex-1 px-4 py-4 space-y-2">
                     {{-- Link Dashboard --}}
                     <a href="{{ route('dashboard') }}" class="flex items-center  px-4 py-2.5 rounded-lg transition duration-200 {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white' : 'hover:bg-gray-700 hover:text-white' }}">

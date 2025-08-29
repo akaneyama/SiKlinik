@@ -29,34 +29,34 @@
                             <x-text-input id="dosis" name="dosis" type="text" class="mt-1 block w-full" :value="old('dosis')" />
                             <x-input-error :messages="$errors->get('dosis')" class="mt-2" />
                         </div>
- <div x-data="dropdownSearch()" class="relative w-full">
-    <x-input-label for="bentuk_sediaan" value="Bentuk Sediaan" />
+                            <div x-data="dropdownSearch()" class="relative w-full">
+                                <x-input-label for="bentuk_sediaan" value="Bentuk Sediaan" />
 
-    <input
-        type="text"
-        x-model="search"
-        @focus="open = true"
-        @click.away="open = false"
-        placeholder="Cari bentuk sediaan..."
-        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm
-            focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-    >
+                                <input
+                                    type="text"
+                                    x-model="search"
+                                    @focus="open = true"
+                                    @click.away="open = false"
+                                    placeholder="Cari bentuk sediaan..."
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm
+                                        focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                >
 
-    <input type="hidden" name="bentuk_sediaan" :value="selected">
+                                <input type="hidden" name="bentuk_sediaan" :value="selected">
 
-    <div x-show="open"
-        class="absolute z-10 mt-1 w-full bg-white border
-                border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                                <div x-show="open"
+                                    class="absolute z-10 mt-1 w-full bg-white border
+                                            border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
 
-        <template x-for="item in filtered" :key="item">
-            <div @click="choose(item)"
-                class="cursor-pointer px-3 py-2 hover:bg-indigo-500 hover:text-white"
-                x-text="item"></div>
-        </template>
-    </div>
+                                    <template x-for="item in filtered" :key="item">
+                                        <div @click="choose(item)"
+                                            class="cursor-pointer px-3 py-2 hover:bg-indigo-500 hover:text-white"
+                                            x-text="item"></div>
+                                    </template>
+                                </div>
 
-    <x-input-error :messages="$errors->get('bentuk_sediaan')" class="mt-2" />
-</div>
+                                <x-input-error :messages="$errors->get('bentuk_sediaan')" class="mt-2" />
+                            </div>
 
                         <div>
                             <x-input-label for="batch" value="No. Batch" />
@@ -167,11 +167,20 @@
                         <x-input-error :messages="$errors->get('kategori')" class="mt-2" />
                     </div>
                     </div>
-                    <div>
+                    <!-- <div>
                         <x-input-label for="digunakan_untuk" value="Digunakan Untuk" />
                         <x-text-input id="digunakan_untuk" name="digunakan_untuk" type="text" class="mt-1 block w-full" :value="old('digunakan_untuk')" />
                         <x-input-error :messages="$errors->get('digunakan_untuk')" class="mt-2" />
-                    </div>
+                    </div> -->
+                    <div>
+                            <x-input-label for="digunakan_untuk" value="Digunakan Untuk" />
+                            <select name="digunakan_untuk" id="digunakan_untuk" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                                <option value="Produk Jual dan Bahan" {{ old('digunakan_untuk') == 'Produk Jual dan Bahan' ? 'selected' : '' }}>Produk Jual dan Bahan</option>
+                                <option value="Produk Jual Saja" {{ old('digunakan_untuk') == 'Produk Jual Saja' ? 'selected' : '' }}>Produk Jual Saja</option>
+                                <option value="Produk Bahan Saja" {{ old('digunakan_untuk') == 'Produk Bahan Saja' ? 'selected' : '' }}>Produk Bahan Saja</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('digunakan_untuk')" class="mt-2" />
+                        </div>
                 </div>
 
                 {{-- === BAGIAN STOK === --}}
@@ -250,14 +259,64 @@
                 <div class="space-y-4 mt-6">
                     <h3 class="font-bold text-gray-800 border-b pb-2">Kemasan & Konversi</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
+                        <!-- <div>
                             <x-input-label for="kemasan_besar" value="Kemasan Besar (cth: Dus)" />
                             <x-text-input id="kemasan_besar" name="kemasan_besar" type="text" class="mt-1 block w-full" :value="old('kemasan_besar')" />
                             <x-input-error :messages="$errors->get('kemasan_besar')" class="mt-2" />
+                        </div> -->
+                        <div x-data="dropdownSearchkemasanbesar()" class="relative w-full">
+                            <x-input-label for="kemasan_besar" value="kemasan_besar"/>
+                           
+                            <input
+                                type="text"
+                                x-model="search"
+                                @focus="open = true"
+                                @click.away="open = false"
+                                placeholder="Cari Jenis Kemasan Besar..."
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm
+                                    focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            >
+                            <input type="hidden" name="kemasan_besar" :value="selected">
+                            <div x-show="open"
+                                class="absolute z-10 mt-1 w-full bg-white border
+                                        border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+
+                                <template x-for="item in filtered" :key="item">
+                                    <div @click="choose(item)"
+                                        class="cursor-pointer px-3 py-2 hover:bg-indigo-500 hover:text-white"
+                                        x-text="item"></div>
+                                </template>
+                            </div>
+                            <x-input-error :messages="$errors->get('kemasan_besar')" class="mt-2" />
                         </div>
-                        <div>
+                        <!-- <div>
                             <x-input-label for="kemasan_kecil" value="Kemasan Kecil (cth: Blister)" />
                             <x-text-input id="kemasan_kecil" name="kemasan_kecil" type="text" class="mt-1 block w-full" :value="old('kemasan_kecil')" />
+                            <x-input-error :messages="$errors->get('kemasan_kecil')" class="mt-2" />
+                        </div> -->
+                        <div x-data="dropdownSearchkemasankecil()" class="relative w-full">
+                            <x-input-label for="kemasan_kecil" value="kemasan_kecil"/>
+                           
+                            <input
+                                type="text"
+                                x-model="search"
+                                @focus="open = true"
+                                @click.away="open = false"
+                                placeholder="Cari Jenis Kemasan Kecil..."
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm
+                                    focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            >
+                            <input type="hidden" name="kemasan_kecil" :value="selected">
+                            <div x-show="open"
+                                class="absolute z-10 mt-1 w-full bg-white border
+                                        border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+
+                                <template x-for="item in filtered" :key="item">
+                                    <div @click="choose(item)"
+                                        class="cursor-pointer px-3 py-2 hover:bg-indigo-500 hover:text-white"
+                                        x-text="item"></div>
+                                </template>
+                            </div>
                             <x-input-error :messages="$errors->get('kemasan_kecil')" class="mt-2" />
                         </div>
                         <div>
@@ -310,51 +369,138 @@
             }
         }
     }
-      function dropdownSearch() {
+     function dropdownSearch() {
 
-        return {
+    return {
 
-            open: false,
+      open: false,
 
-            search: '',
+      search: '',
 
-            selected: '{{ old('bentuk_sediaan') }}',
+      selected: '{{ old('bentuk_sediaan') }}',
 
-            items: [
+      items: [
 
-                'Aerosol','Bedak padat','Bubuk','Cairan','Cairan inhalasi','Cairan oral','Custom','Form','Granula','Habis pakai','Infus',
+        'Aerosol','Bedak padat','Bubuk','Cairan','Cairan inhalasi','Cairan oral','Custom','Form','Granula','Habis pakai','Infus',
 
-                'Inhaler','Injeksi','Jel','Kaplet','Kapsul','Krim','Lotion','Nebulizer','Obat kumur','Odol','Oil','Patch','Pessari','Racikan',
+        'Inhaler','Injeksi','Jel','Kaplet','Kapsul','Krim','Lotion','Nebulizer','Obat kumur','Odol','Oil','Patch','Pessari','Racikan',
 
-                'Sabun','Salep','Salep mata','Semprot','Semprot hidung','Shampoo','Sirup','Sirup kering','Supositoria','Suspensi','Tablet',
+        'Sabun','Salep','Salep mata','Semprot','Semprot hidung','Shampoo','Sirup','Sirup kering','Supositoria','Suspensi','Tablet',
 
-                'Tablet hisap','Tablet kunyah','Tetes','Tetes hidung','Tetes mata','Tetes telinga','Tube anus'
+        'Tablet hisap','Tablet kunyah','Tetes','Tetes hidung','Tetes mata','Tetes telinga','Tube anus'
 
-            ],
+      ],
 
-            get filtered() {
+      get filtered() {
 
-                return this.items.filter(i =>
+        return this.items.filter(i =>
 
-                    i.toLowerCase().includes(this.search.toLowerCase())
+          i.toLowerCase().includes(this.search.toLowerCase())
 
-                );
+        );
 
-            },
+      },
 
-            choose(item) {
+      choose(item) {
 
-                this.selected = item;
+        this.selected = item;
 
-                this.search = item;
+        this.search = item;
 
-                this.open = false;
+        this.open = false;
 
-            }
+      }
 
-        }
+}
+ }
 
-    }
+ function dropdownSearchkemasanbesar() {
+
+return {
+
+  open: false,
+
+  search: '',
+
+  selected: '{{ old('kemasan_besar') }}',
+
+  items: [
+
+    'Ampul', 'Botol', 'Botol kaca', 'Buah', 'Bungkus', 'Cc', 'Cm', 'Dus', 'Gram', 
+    'Inch', 'Kaleng', 'Kantong', 'Kaplet', 'Kapsul', 'Kg', 'Kolf', 'Kotak', 
+    'Lembar', 'Liter', 'Lusin', 'Meter', 'Mg', 'Ml', 'Pak', 'Pasang', 'Pot', 
+    'Rim', 'Rol', 'Sachet', 'Set', 'Shot', 'Strip', 'Supp', 'Syringe', 
+    'Tablet', 'Tas', 'Tes', 'Tube', 'Unit', 'Vial', 'Zak'
+
+
+  ],
+
+  get filtered() {
+
+    return this.items.filter(i =>
+
+      i.toLowerCase().includes(this.search.toLowerCase())
+
+    );
+
+  },
+
+  choose(item) {
+
+    this.selected = item;
+
+    this.search = item;
+
+    this.open = false;
+
+  }
+
+}
+}
+
+function dropdownSearchkemasankecil() {
+
+return {
+
+  open: false,
+
+  search: '',
+
+  selected: '{{ old('kemasan_kecil') }}',
+
+  items: [
+
+    'Ampul', 'Botol', 'Botol kaca', 'Buah', 'Bungkus', 'Cc', 'Cm', 'Dus', 'Gram', 
+    'Inch', 'Kaleng', 'Kantong', 'Kaplet', 'Kapsul', 'Kg', 'Kolf', 'Kotak', 
+    'Lembar', 'Liter', 'Lusin', 'Meter', 'Mg', 'Ml', 'Pak', 'Pasang', 'Pot', 
+    'Rim', 'Rol', 'Sachet', 'Set', 'Shot', 'Strip', 'Supp', 'Syringe', 
+    'Tablet', 'Tas', 'Tes', 'Tube', 'Unit', 'Vial', 'Zak'
+
+
+  ],
+
+  get filtered() {
+
+    return this.items.filter(i =>
+
+      i.toLowerCase().includes(this.search.toLowerCase())
+
+    );
+
+  },
+
+  choose(item) {
+
+    this.selected = item;
+
+    this.search = item;
+
+    this.open = false;
+
+  }
+
+}
+}
 
 
 </script>
