@@ -261,14 +261,70 @@
                 <div class="space-y-4 mt-6">
                     <h3 class="font-bold text-gray-800 border-b pb-2">Kemasan & Konversi</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
+                        {{-- <div>
                             <x-input-label for="kemasan_besar" value="Kemasan Besar (cth: Dus)" />
                             <x-text-input id="kemasan_besar" name="kemasan_besar" type="text" class="mt-1 block w-full" :value="old('kemasan_besar', $product->kemasan_besar)" />
                             <x-input-error :messages="$errors->get('kemasan_besar')" class="mt-2" />
+                        </div> --}}
+                        <div x-data="dropdownSearchkemasanbesar()" class="relative w-full">
+                            <x-input-label for="kemasan_besar" value="kemasan_besar" />
+
+                            <input
+                                type="text"
+                                x-model="search"
+                                @focus="open = true"
+                                @click.away="open = false"
+                                placeholder="Cari Kemasan Besar...."
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm
+                                    focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            >
+
+                            <input type="hidden" name="kemasan_besar" :value="selected">
+
+                            <div x-show="open"
+                                class="absolute z-10 mt-1 w-full bg-white border
+                                        border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+
+                                <template x-for="item in filtered" :key="item">
+                                    <div @click="choose(item)"
+                                        class="cursor-pointer px-3 py-2 hover:bg-indigo-500 hover:text-white"
+                                        x-text="item"></div>
+                                </template>
+                            </div>
+
+                            <x-input-error :messages="$errors->get('kemasan_besar')" class="mt-2" />
                         </div>
-                        <div>
+                        {{-- <div>
                             <x-input-label for="kemasan_kecil" value="Kemasan Kecil (cth: Blister)" />
                             <x-text-input id="kemasan_kecil" name="kemasan_kecil" type="text" class="mt-1 block w-full" :value="old('kemasan_kecil', $product->kemasan_kecil)" />
+                            <x-input-error :messages="$errors->get('kemasan_kecil')" class="mt-2" />
+                        </div> --}}
+                        <div x-data="dropdownSearchkemasankecil()" class="relative w-full">
+                            <x-input-label for="kemasan_kecil" value="kemasan_kecil" />
+
+                            <input
+                                type="text"
+                                x-model="search"
+                                @focus="open = true"
+                                @click.away="open = false"
+                                placeholder="Cari Kemasan Kecil...."
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm
+                                    focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            >
+
+                            <input type="hidden" name="kemasan_kecil" :value="selected">
+
+                            <div x-show="open"
+                                class="absolute z-10 mt-1 w-full bg-white border
+                                        border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+
+                                <template x-for="item in filtered" :key="item">
+                                    <div @click="choose(item)"
+                                        class="cursor-pointer px-3 py-2 hover:bg-indigo-500 hover:text-white"
+                                        x-text="item"></div>
+                                </template>
+                            </div>
+
                             <x-input-error :messages="$errors->get('kemasan_kecil')" class="mt-2" />
                         </div>
                         <div>
@@ -313,6 +369,54 @@
             }
         }
     }
+    function dropdownSearchkemasanbesar() {
+        return {
+        open: false,
+        search: '{{ old('kemasan_besar',$product->kemasan_besar) }}',
+        selected: '{{ old('kemasan_besar',$product->kemasan_besar) }}',
+        items: [
+            'Ampul', 'Botol', 'Botol kaca', 'Buah', 'Bungkus', 'Cc', 'Cm', 'Dus', 'Gram',
+            'Inch', 'Kaleng', 'Kantong', 'Kaplet', 'Kapsul', 'Kg', 'Kolf', 'Kotak',
+            'Lembar', 'Liter', 'Lusin', 'Meter', 'Mg', 'Ml', 'Pak', 'Pasang', 'Pot',
+            'Rim', 'Rol', 'Sachet', 'Set', 'Shot', 'Strip', 'Supp', 'Syringe',
+            'Tablet', 'Tas', 'Tes', 'Tube', 'Unit', 'Vial', 'Zak'
+        ],
+        get filtered() {
+            return this.items.filter(i =>
+            i.toLowerCase().includes(this.search.toLowerCase())
+            );
+        },
+        choose(item) {
+            this.selected = item;
+            this.search = item;
+            this.open = false;
+        }
+        }
+        }
+        function dropdownSearchkemasankecil() {
+        return {
+        open: false,
+        search: '{{ old('kemasan_kecil',$product->kemasan_kecil) }}',
+        selected: '{{ old('kemasan_kecil',$product->kemasan_kecil) }}',
+        items: [
+            'Ampul', 'Botol', 'Botol kaca', 'Buah', 'Bungkus', 'Cc', 'Cm', 'Dus', 'Gram',
+            'Inch', 'Kaleng', 'Kantong', 'Kaplet', 'Kapsul', 'Kg', 'Kolf', 'Kotak',
+            'Lembar', 'Liter', 'Lusin', 'Meter', 'Mg', 'Ml', 'Pak', 'Pasang', 'Pot',
+            'Rim', 'Rol', 'Sachet', 'Set', 'Shot', 'Strip', 'Supp', 'Syringe',
+            'Tablet', 'Tas', 'Tes', 'Tube', 'Unit', 'Vial', 'Zak'
+        ],
+        get filtered() {
+            return this.items.filter(i =>
+            i.toLowerCase().includes(this.search.toLowerCase())
+            );
+        },
+        choose(item) {
+            this.selected = item;
+            this.search = item;
+            this.open = false;
+        }
+        }
+        }
      function multiselect() {
         return {
             open: false,
