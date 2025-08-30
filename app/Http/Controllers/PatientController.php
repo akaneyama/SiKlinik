@@ -11,36 +11,73 @@ use Illuminate\Validation\Rule;
 
 class PatientController extends Controller
 {
-    /**
-     * Menampilkan daftar semua pasien.
-     */
     public function index()
     {
         $patients = Patient::with('membership')->latest()->paginate(15);
         return view('patients.index', compact('patients'));
     }
 
-    /**
-     * Menampilkan form untuk membuat pasien baru.
-     */
     public function create()
     {
         return view('patients.create');
     }
 
-    /**
-     * Menyimpan data pasien baru ke database.
-     */
+    // Fungsi helper untuk validasi agar tidak duplikat kode
+    private function validatePatient(Request $request, Patient $patient = null)
+    {
+        $emailRule = ['nullable', 'email', 'max:255'];
+        $identityRule = ['nullable', 'string', 'max:255'];
+
+        if ($patient) { // Saat update
+            $emailRule[] = Rule::unique('patients', 'email')->ignore($patient->id_pasien, 'id_pasien');
+            $identityRule[] = Rule::unique('patients', 'no_identitas')->ignore($patient->id_pasien, 'id_pasien');
+        } else { // Saat create
+            $emailRule[] = 'unique:patients,email';
+            $identityRule[] = 'unique:patients,no_identitas';
+        }
+
+        return $request->validate([
+            'nama_pasien' => ['required', 'string', 'max:255'],
+            'jenis_identitas' => ['nullable', Rule::in(['KTP', 'SIM', 'Paspor', 'Lainnya'])],
+            'no_identitas' => $identityRule,
+            'tempat_lahir' => ['nullable', 'string', 'max:255'],
+            'tanggal_lahir' => ['nullable', 'date'],
+            'jenis_kelamin' => ['nullable', Rule::in(['Laki-laki', 'Perempuan'])],
+            'gol_darah' => ['nullable', Rule::in(['A', 'B', 'AB', 'O', 'Tidak Tahu'])],
+            'agama' => ['nullable', 'string', 'max:255'],
+            'etnis' => ['nullable', 'string', 'max:255'],
+            'kewarganegaraan' => ['nullable', 'string', 'max:255'],
+            'tingkat_pendidikan' => ['nullable', 'string', 'max:255'],
+            'pekerjaan' => ['nullable', 'string', 'max:255'],
+            'email' => $emailRule,
+            'nomor_telp' => ['nullable', 'string', 'max:255'],
+            'whatsapp' => ['nullable', 'string', 'max:255'],
+            'telepon_domisili' => ['nullable', 'string', 'max:255'],
+            'alamat_domisili' => ['nullable', 'string'],
+            'desa_kelurahan' => ['nullable', 'string', 'max:255'],
+            'kecamatan' => ['nullable', 'string', 'max:255'],
+            'kota' => ['nullable', 'string', 'max:255'],
+            'provinsi' => ['nullable', 'string', 'max:255'],
+            'kode_pos' => ['nullable', 'string', 'max:255'],
+            'kerabat_pasien' => ['nullable', 'string', 'max:255'],
+            'hubungan_kerabat' => ['nullable', 'string', 'max:255'],
+            'no_telp_kerabat' => ['nullable', 'string', 'max:255'],
+            'id_lama' => ['nullable', 'string', 'max:255'],
+            'perusahaan' => ['nullable', 'string', 'max:255'],
+            'alamat_perusahaan' => ['nullable', 'string'],
+            'telepon_perusahaan' => ['nullable', 'string', 'max:255'],
+            'jenis_keanggotaan' => ['nullable', 'string', 'max:255'],
+            'keanggotaan_kadaluarsa' => ['nullable', 'date'],
+            'insurances' => ['nullable', 'array'],
+        ]);
+    }
+
     public function store(Request $request)
     {
-        // Validasi data akan kita tambahkan nanti saat membuat view
-        // Untuk sekarang kita fokus pada logika penyimpanan
+        $validatedData = $this->validatePatient($request);
 
-        // Gunakan DB Transaction untuk memastikan semua data konsisten.
-        // Jika salah satu gagal, semua akan dibatalkan (rollback).
         try {
-            DB::transaction(function () use ($request) {
-                // 1. Urus Keanggotaan (Membership)
+            DB::transaction(function () use ($request, $validatedData) {
                 $membershipId = null;
                 if ($request->filled('jenis_keanggotaan')) {
                     $membership = Membership::create([
@@ -49,106 +86,12 @@ class PatientController extends Controller
                     ]);
                     $membershipId = $membership->id_keanggotaan;
                 }
+                
+                // Gunakan $validatedData agar lebih aman
+                $patientData = $validatedData;
+                $patientData['id_keanggotaan'] = $membershipId;
+                $patient = Patient::create($patientData);
 
-                // 2. Buat data Pasien utama
-                $patient = Patient::create([
-                    'nama_pasien' => $request->nama_pasien,
-                    'no_identitas' => $request->no_identitas,
-                    'jenis_identitas' => $request->jenis_identitas,
-                    'tempat_lahir' => $request->tempat_lahir,
-                    'tanggal_lahir' => $request->tanggal_lahir,
-                    'jenis_kelamin' => $request->jenis_kelamin,
-                    'gol_darah' => $request->gol_darah,
-                    'agama' => $request->agama,
-                    'email' => $request->email,
-                    'nomor_telp' => $request->nomor_telp,
-                    // ... isi semua kolom lain dari $request
-                    'id_keanggotaan' => $membershipId,
-                ]);
-
-                // 3. Urus Asuransi (bisa lebih dari satu)
-                if ($request->has('insurances')) {
-                    foreach ($request->insurances as $asuransiData) {
-                        // Cari atau buat baru data polis asuransi
-                        $insurance = Insurance::updateOrCreate(
-                            ['no_polis' => $asuransiData['no_polis']], // Kunci untuk mencari
-                            [ // Data untuk diisi jika tidak ada atau diupdate
-                                'nama_asuransi' => $asuransiData['nama_asuransi'],
-                                'jenis_asuransi' => $asuransiData['jenis_asuransi'],
-                                'nama_pemegang_polis' => $asuransiData['nama_pemegang_polis'],
-                            ]
-                        );
-
-                        // Hubungkan pasien dengan asuransi di tabel pivot
-                        $patient->insurances()->attach($insurance->id_asuransi, [
-                            'status_hubungan' => $asuransiData['status_hubungan'],
-                            'nomor_kartu_pasien' => $asuransiData['nomor_kartu_pasien'],
-                        ]);
-                    }
-                }
-            });
-        } catch (\Exception $e) {
-            // Jika terjadi error, kembalikan ke halaman sebelumnya dengan pesan error
-            return back()->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())->withInput();
-        }
-
-        return redirect()->route('patients.index')->with('success', 'Data pasien baru berhasil ditambahkan.');
-    }
-
-    /**
-     * Menampilkan detail satu pasien (jika diperlukan).
-     */
-    public function show(Patient $patient)
-    {
-        $patient->load('membership', 'insurances');
-        return view('patients.show', compact('patient'));
-    }
-
-    /**
-     * Menampilkan form untuk mengedit data pasien.
-     */
-    public function edit(Patient $patient)
-    {
-        $patient->load('membership', 'insurances');
-        return view('patients.edit', compact('patient'));
-    }
-
-    /**
-     * Memperbarui data pasien di database.
-     */
-    public function update(Request $request, Patient $patient)
-    {
-        // Validasi data akan kita tambahkan nanti
-
-        try {
-            DB::transaction(function () use ($request, $patient) {
-                // 1. Urus Keanggotaan (Membership)
-                if ($request->filled('jenis_keanggotaan')) {
-                    if ($patient->membership) {
-                        // Jika sudah ada, update
-                        $patient->membership->update([
-                            'jenis_keanggotaan' => $request->jenis_keanggotaan,
-                            'keanggotaan_kadaluarsa' => $request->keanggotaan_kadaluarsa,
-                        ]);
-                    } else {
-                        // Jika belum ada, buat baru dan hubungkan
-                        $membership = Membership::create([
-                            'jenis_keanggotaan' => $request->jenis_keanggotaan,
-                            'keanggotaan_kadaluarsa' => $request->keanggotaan_kadaluarsa,
-                        ]);
-                        $patient->id_keanggotaan = $membership->id_keanggotaan;
-                    }
-                } else {
-                    // Jika dikosongkan, hapus relasi keanggotaan
-                    $patient->id_keanggotaan = null;
-                }
-
-                // 2. Update data Pasien utama
-                $patient->update($request->except(['insurances', 'jenis_keanggotaan', 'keanggotaan_kadaluarsa']));
-                $patient->save();
-
-                // 3. Urus Asuransi dengan metode sync()
-                $syncData = [];
                 if ($request->has('insurances')) {
                     foreach ($request->insurances as $asuransiData) {
                         $insurance = Insurance::updateOrCreate(
@@ -159,14 +102,79 @@ class PatientController extends Controller
                                 'nama_pemegang_polis' => $asuransiData['nama_pemegang_polis'],
                             ]
                         );
-                        // Siapkan data untuk sync
+
+                        $patient->insurances()->attach($insurance->id_asuransi, [
+                            'status_hubungan' => $asuransiData['status_hubungan'],
+                            'nomor_kartu_pasien' => $asuransiData['nomor_kartu_pasien'],
+                        ]);
+                    }
+                }
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())->withInput();
+        }
+
+        return redirect()->route('patients.index')->with('success', 'Data pasien baru berhasil ditambahkan.');
+    }
+
+    public function show(Patient $patient)
+    {
+        $patient->load('membership', 'insurances');
+        return view('patients.show', compact('patient'));
+    }
+
+    public function edit(Patient $patient)
+    {
+        $patient->load('membership', 'insurances');
+        return view('patients.edit', compact('patient'));
+    }
+
+    public function update(Request $request, Patient $patient)
+    {
+        $validatedData = $this->validatePatient($request, $patient);
+
+        try {
+            DB::transaction(function () use ($request, $patient, $validatedData) {
+                if ($request->filled('jenis_keanggotaan')) {
+                    if ($patient->membership) {
+                        $patient->membership->update([
+                            'jenis_keanggotaan' => $request->jenis_keanggotaan,
+                            'keanggotaan_kadaluarsa' => $request->keanggotaan_kadaluarsa,
+                        ]);
+                    } else {
+                        $membership = Membership::create([
+                            'jenis_keanggotaan' => $request->jenis_keanggotaan,
+                            'keanggotaan_kadaluarsa' => $request->keanggotaan_kadaluarsa,
+                        ]);
+                        $validatedData['id_keanggotaan'] = $membership->id_keanggotaan;
+                    }
+                } else {
+                    if ($patient->membership) {
+                        $patient->membership->delete();
+                    }
+                    $validatedData['id_keanggotaan'] = null;
+                }
+                
+                $patient->update($validatedData);
+
+                $syncData = [];
+                if ($request->has('insurances')) {
+                    foreach ($request->insurances as $asuransiData) {
+                        if (empty($asuransiData['no_polis'])) continue; // Lewati jika no polis kosong
+                        $insurance = Insurance::updateOrCreate(
+                            ['no_polis' => $asuransiData['no_polis']],
+                            [
+                                'nama_asuransi' => $asuransiData['nama_asuransi'],
+                                'jenis_asuransi' => $asuransiData['jenis_asuransi'],
+                                'nama_pemegang_polis' => $asuransiData['nama_pemegang_polis'],
+                            ]
+                        );
                         $syncData[$insurance->id_asuransi] = [
                             'status_hubungan' => $asuransiData['status_hubungan'],
                             'nomor_kartu_pasien' => $asuransiData['nomor_kartu_pasien'],
                         ];
                     }
                 }
-                // Sync akan otomatis menambah, mengupdate, dan menghapus relasi asuransi
                 $patient->insurances()->sync($syncData);
             });
         } catch (\Exception $e) {
@@ -176,9 +184,6 @@ class PatientController extends Controller
         return redirect()->route('patients.index')->with('success', 'Data pasien berhasil diperbarui.');
     }
 
-    /**
-     * Menghapus data pasien dari database.
-     */
     public function destroy(Patient $patient)
     {
         try {
