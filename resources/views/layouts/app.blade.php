@@ -13,7 +13,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        
+
         <div class="flex h-screen bg-gray-200">
             <aside class="w-64 bg-gray-900 text-gray-200 flex flex-col">
            <!-- <div class="h-25 flex flex-col items-center justify-center bg-gray-900 m-5">
@@ -34,8 +34,8 @@
 
                     {{-- master --}}
                   <div x-data="{
-                            open: {{ request()->routeIs('users.*') || request()->routeIs('doctors.*') || request()->routeIs('products.*') ? 'true' : 'false' }},
-                            isActive: {{ request()->routeIs('users.*') || request()->routeIs('doctors.*') || request()->routeIs('products.*') ? 'true' : 'false' }}
+                            open: {{ request()->routeIs('users.*') || request()->routeIs('patients.*') ||  request()->routeIs('doctors.*') || request()->routeIs('products.*') ? 'true' : 'false' }},
+                            isActive: {{ request()->routeIs('users.*') || request()->routeIs('patients.*') || request()->routeIs('doctors.*') || request()->routeIs('products.*') ? 'true' : 'false' }}
                         }">
 
                         <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition duration-200"
@@ -67,7 +67,10 @@
                             class="flex items-center w-full px-4 py-2 rounded-lg text-sm transition duration-200 {{ request()->routeIs('products.*') ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white' }}">
                             Manajemen Produk
                             </a>
-
+                            <a href="{{ route('patients.index') }}"
+                            class="flex items-center w-full px-4 py-2 rounded-lg text-sm transition duration-200 {{ request()->routeIs('patients.*') ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white' }}">
+                            Manajemen Pasien
+                            </a>
                         </div>
                     </div>
                 </nav>
