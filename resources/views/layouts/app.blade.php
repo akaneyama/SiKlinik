@@ -34,8 +34,8 @@
 
                     {{-- master --}}
                   <div x-data="{
-                            open: {{ request()->routeIs('users.*') || request()->routeIs('patients.*') ||  request()->routeIs('doctors.*') || request()->routeIs('products.*') ? 'true' : 'false' }},
-                            isActive: {{ request()->routeIs('users.*') || request()->routeIs('patients.*') || request()->routeIs('doctors.*') || request()->routeIs('products.*') ? 'true' : 'false' }}
+                            open: {{ request()->routeIs('users.*') || request()->routeIs('polis.*') || request()->routeIs('patients.*') ||  request()->routeIs('doctors.*') || request()->routeIs('products.*') ? 'true' : 'false' }},
+                            isActive: {{ request()->routeIs('users.*') || request()->routeIs('polis.*') || request()->routeIs('patients.*') || request()->routeIs('doctors.*') || request()->routeIs('products.*') ? 'true' : 'false' }}
                         }">
 
                         <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition duration-200"
@@ -70,6 +70,10 @@
                             <a href="{{ route('patients.index') }}"
                             class="flex items-center w-full px-4 py-2 rounded-lg text-sm transition duration-200 {{ request()->routeIs('patients.*') ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white' }}">
                             Manajemen Pasien
+                            </a>
+                            <a href="{{ route('polis.index') }}"
+                            class="flex items-center w-full px-4 py-2 rounded-lg text-sm transition duration-200 {{ request()->routeIs('polis.*') ? 'bg-gray-700 text-white' : 'hover:bg-gray-700 hover:text-white' }}">
+                            Manajemen Poli
                             </a>
                         </div>
                     </div>

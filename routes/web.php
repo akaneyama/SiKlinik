@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PoliController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('doctors', DoctorController::class);
     Route::resource('products',ProductController::class);
     Route::resource('patients', PatientController::class);
+    Route::resource('polis', PoliController::class); 
 });
 
 require __DIR__.'/auth.php';
